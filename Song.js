@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, Dimensions } from 'react-native';
-// import HTML from 'react-native-render-html'
 import HTMLView from 'react-native-htmlview';
 
 import Title from './Title.js'

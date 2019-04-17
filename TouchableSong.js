@@ -19,7 +19,8 @@ export default class TouchableSong extends React.Component {
     return (
       <TouchableHighlight underlayColor={'lightGrey'} onPress={this.props.onPress}>
         <View style={styles.songButton}>
-          <Text style={styles.songText}>{this.props.songName}</Text>
+          <Text style={styles.songName}>{this.props.songName}</Text>
+          <Text style={styles.songArtist}>  {this.props.songArtist}</Text>
         </View>
       </TouchableHighlight>
     );
@@ -27,15 +28,22 @@ export default class TouchableSong extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  songText: {
+  songName: {
     fontSize: 20,
     color: colors.light,
   },
+  songArtist: {
+    fontSize: 15,
+    color: colors.darkAlt,
+    paddingTop: 5,
+  },
   songButton: {
+    display: 'flex',
+    flexDirection: 'row',
     backgroundColor: colors.primary,
     height: 45,
     marginBottom: 1,
     padding: 10,
-    justifyContent: 'center',
+    alignItems: 'center',
   }
 })

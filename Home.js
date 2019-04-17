@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableHighlight } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableHighlight, RefreshControl } from 'react-native';
 
 import TouchableSong from './TouchableSong.js'
 
@@ -37,13 +37,15 @@ export default class App extends React.Component {
   }
 
   getSongList() {
-    db.collection('songs').get().then((querySnapshot) => {
+    db.collection('info').get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         let songList = this.state.songList
-        songList.push({
-          songName: doc.id,
-          songArtist: doc.data().artist,
-        })
+        if (!(songList.some(song => song.songName == doc.id))) {
+          songList.push({
+            songName: doc.id,
+            songArtist: doc.data().artist,
+          })
+        }
 
         this.setState({
           songList: songList
@@ -56,18 +58,47 @@ export default class App extends React.Component {
     this.props.navigation.navigate('Song', {title: song.songName, artist: song.songArtist})
   }
 
+  onRefresh = () => {
+    this.setState({
+      refreshing: true
+    })
+    this.getSongList()
+    this.setState({
+      refreshing: false
+    })
+  }
+
   render() {
-    return (
-      <ScrollView style={styles.viewContainer}>
-        {
-          // NOTE 'song' is an *object* in state
-          this.state.songList.map(song => {
-            // return (<TouchableHighlight onPress={() => this.showSong(song)} key={song.songName}><Text>{song.songName}</Text></TouchableHighlight>)
-            return (<TouchableSong onPress={() => this.showSong(song)} key={song.songName} songName={song.songName}/>)
-          })
+    if (this.state.songList.length > 0) {
+      return (
+        <ScrollView style={styles.viewContainer}
+        refreshControl={
+          <RefreshControl 
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh}
+          />
         }
-      </ScrollView>
-    );
+        >
+          {
+            // NOTE 'song' is an *object* in state
+            this.state.songList.map(song => {
+              return (<TouchableSong onPress={() => this.showSong(song)} 
+              key={song.songName} 
+              songName={song.songName}
+              songArtist={song.songArtist}
+              />)
+            })
+          }
+        </ScrollView>
+      );
+    } else {
+      return (
+        <View style={styles.loading}>
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      )
+    }
+    
   }
 }
 
@@ -76,4 +107,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.lightAlt,
   },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.lightAlt,
+  },
+  loadingText: {
+    color: colors.dark
+  }
 })
