@@ -76,6 +76,7 @@ const HTMLStyles = StyleSheet.create({
   pre: {
     padding: 5,
     backgroundColor: colors.dark,
+    fontFamily: 'monospace',
   },
   chord: {
     fontWeight: '700',
